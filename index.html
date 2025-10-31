@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application</title>
+  </head>
+  <body>
+    <script type="module">
+      import testData from './testdata.json' with { type: 'json'};
+
+      const results = [];
+      const plugInWorker = new Worker("plug-ins.js");
+
+      plugInWorker.postMessage('./plug-ins/manifest.json');
+      plugInWorker.onmessage = ({data}) => {
+        if (data === "__LOADED__") {
+          testData.flat().map(
+            (testDatum) => plugInWorker.postMessage(testDatum)
+          );
+        }
+        else {
+          results.push(data);
+          if (results.length === testData.flat().length) {
+            console.table(testData.flat().map(
+              (testDatum, index) => ({
+                testcase: testDatum,
+                result: results[index]
+              })
+            ));
+            plugInWorker.terminate();
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

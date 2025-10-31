@@ -1,0 +1,6 @@
+{
+  "add": "addition.js",
+  "sub": "subtraction.js",
+  "mul": "multiplication.js",
+  "div": "division.js"
+}
